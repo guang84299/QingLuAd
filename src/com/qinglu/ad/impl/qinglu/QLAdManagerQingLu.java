@@ -16,8 +16,7 @@ public class QLAdManagerQingLu implements QLAdManager{
 	public void init(boolean isTestModel) {		
 		// 下载必要资源
 		QLNetTools.downloadInitRes(context);
-		//上传基本数据
-		QLNetTools.uploadUserInfo(context);
+		
 	}
 
 }

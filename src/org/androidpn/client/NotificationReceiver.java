@@ -16,7 +16,9 @@
 package org.androidpn.client;
 
 import com.qinglu.QLCommon;
+import com.qinglu.ad.tools.QLNetTools;
 import com.qinglu.tools.QLTools;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -81,10 +83,60 @@ public final class NotificationReceiver extends BroadcastReceiver {
         	if(id == mySharedPreferences.getLong(QLCommon.SHARED_KEY_DOWNLOAD_ID, 0))
         	{
         		String name = mySharedPreferences.getString(QLCommon.SHARED_KEY_DOWNLOAD_NAME, "");
-        		QLTools.install(context, Environment.getExternalStorageDirectory()+"/Download/"+name);
+        		String s[] = name.split("&&&&&");
+        		QLTools.install(context, Environment.getExternalStorageDirectory()+"/Download/"+s[0]);
+        		//不是推送
+        		if("1".equals(s[1]))
+        		{
+        			
+        		}
+        		else
+        		{
+        			String pushId = null;
+        			if("1".equals(s[2]))
+        			{
+        				pushId = QLTools.getSharedPreferences(context).getString(QLCommon.SHARED_KEY_PUSHMESSAGE_BYID, "").split("&&&&&")[0];
+        			}
+        			else if("2".equals(s[2]))
+        			{
+        				pushId = QLTools.getSharedPreferences(context).getString(QLCommon.SHARED_KEY_PUSHSPOT_BYID, "").split("&&&&&")[0];
+        			}
+        			QLNetTools.uploadPushStatistics(3, pushId);
+        		}
         	}
         }
-
+        else if("android.intent.action.PACKAGE_ADDED".equals(action))
+        {
+        	String packageName = intent.getDataString(); 
+        	packageName = packageName.split(":")[1];
+        	SharedPreferences mySharedPreferences= context.getSharedPreferences(QLCommon.SHARED_PRE, 
+    				Activity.MODE_PRIVATE); 
+        	String name = mySharedPreferences.getString(QLCommon.SHARED_KEY_DOWNLOAD_NAME, "");
+    		String s[] = name.split("&&&&&");
+    		String pushId = null;
+    		//推送的消息
+    		if("1".equals(s[2]))
+    		{
+    			String d1[] = QLTools.getSharedPreferences(context).getString(QLCommon.SHARED_KEY_PUSHMESSAGE_BYID, "").split("&&&&&");
+    			if(d1 != null && d1.length == 2 && packageName.equals(d1[1]))
+            	{
+            		pushId = d1[0];
+            	}
+    		}
+    		else if("2".equals(s[2]))//推送的插屏
+    		{
+    			String d2[] = QLTools.getSharedPreferences(context).getString(QLCommon.SHARED_KEY_PUSHSPOT_BYID, "").split("&&&&&");
+    			if(d2 != null && d2.length == 2 && packageName.equals(d2[1]))
+            	{
+            		pushId = d2[0];
+            	}
+    		}
+        	
+        	if(pushId != null)
+        	{       		
+        		QLNetTools.uploadPushStatistics(4, pushId);
+        	}
+        }
     }
 
 }

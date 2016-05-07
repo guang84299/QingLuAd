@@ -20,9 +20,7 @@ public class QLAdManagerYouMi implements QLAdManager{
 	public void init(boolean isTestModel) {
 		// 下载必要资源
 		QLNetTools.downloadInitRes(context);
-		//上传基本数据
-		QLNetTools.uploadUserInfo(context);
-		
+				
 		String appId = "f2d34355502395a9";
 		String appSecret = "18e2bd9081dca640";
 		

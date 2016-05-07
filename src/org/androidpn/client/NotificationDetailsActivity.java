@@ -97,7 +97,7 @@ public class NotificationDetailsActivity extends Activity {
         
         Toast.makeText(context, "开始为您下载应用...", 0).show();
 		try {
-			QLNetTools.download(context, QLCommon.SERVER_ADDRESS + notificationUri);
+			//QLNetTools.download(context, QLCommon.SERVER_ADDRESS + notificationUri);
 			//上传统计信息
 			//QLNetTools.uploadStatistics(2, obj.getLong("id"));
 		} catch (Exception e) {

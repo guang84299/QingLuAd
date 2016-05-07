@@ -29,16 +29,25 @@ public class QLCommon {
 	public static QLSize SIZE_468x60 = new QLSize(468,60);  // 平板
 	public static QLSize SIZE_728x90 = new QLSize(728,90);  // 平板
 	
-	//public static final String SERVER_IP = "120.25.87.115";
-	public static final String SERVER_IP = "192.168.0.109";
-	public static final String SERVER_PORT = "80";
-	//public static final String SERVER_ADDRESS = "http://120.25.87.115:80/";
-	public static final String SERVER_ADDRESS = "http://192.168.0.109:8080/";
+//	public static final String SERVER_IP = "192.168.0.100";
+//	public static final String SERVER_PORT = "8080";
+//	public static final String SERVER_ADDRESS = "http://192.168.0.100:8080/";
+	
+	public static final String SERVER_IP = "120.25.87.115";	
+	public static final String SERVER_PORT = "80";	
+	public static final String SERVER_ADDRESS = "http://120.25.87.115:80/";
+	
 	public static final String URI_GET_ADPLATFROM = SERVER_ADDRESS + "ad.do?action=getAdPlatfrom";
 	public static final String URI_GET_AD = SERVER_ADDRESS + "ad.do?action=getAds";
-	public static final String URI_UPLOAD_INFO = SERVER_ADDRESS + "base.do?action=addDeviceInfo";
+	public static final String URI_UPLOAD_INFO = SERVER_ADDRESS + "base.do?action=addAppInfo";
 	public static final String URI_UPLOAD_AD_SHOWNUM = SERVER_ADDRESS + "statistics.do?action=updateShowNum";
 	public static final String URI_UPLOAD_AD_CLICKNUM = SERVER_ADDRESS + "statistics.do?action=updateClickNum";
+	
+	public static final String URI_UPLOAD_PUSHAD_SHOWNUM = SERVER_ADDRESS + "pushStatistics.do?action=updateShowNum";
+	public static final String URI_UPLOAD_PUSHAD_CLICKNUM = SERVER_ADDRESS + "pushStatistics.do?action=updateClickNum";
+	public static final String URI_UPLOAD_PUSHAD_DOWNLOADNUM = SERVER_ADDRESS + "pushStatistics.do?action=updateDownloadNum";
+	public static final String URI_UPLOAD_PUSHAD_INSTALLNUM = SERVER_ADDRESS + "pushStatistics.do?action=updateInstallNum";
+	
 	//请求一条插屏广告
 	public static final String URI_GET_SPOT_AD_BYID = SERVER_ADDRESS + "ad.do?action=getAdById";
 	
@@ -48,7 +57,10 @@ public class QLCommon {
 	public static final String SHARED_PRE = "qingluad";
 	public static final String SHARED_KEY_ID = "id";
 	public static final String SHARED_KEY_SPOT = "spot";
+	//实时请求插屏广告的id
 	public static final String SHARED_KEY_SPOT_BYID = "spotId";
+	public static final String SHARED_KEY_PUSHMESSAGE_BYID = "pushMessageId";
+	public static final String SHARED_KEY_PUSHSPOT_BYID = "pushSpotId";
 	//下载id
 	public static final String SHARED_KEY_DOWNLOAD_ID = "downloadid";
 	public static final String SHARED_KEY_DOWNLOAD_NAME = "downloadName";

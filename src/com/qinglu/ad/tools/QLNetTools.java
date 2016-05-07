@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.androidpn.client.Constants;
+import org.androidpn.client.NotificationService;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,6 +29,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,7 +45,7 @@ import com.qinglu.tools.QLTools;
 
 public class QLNetTools {
 
-	// 请求初始化广告平台
+	// 请求初始化广告平台 &
 	public static void requestAdPlatfrom(final Context context) {
 		new Thread(new Runnable() {
 
@@ -56,7 +58,8 @@ public class QLNetTools {
 
 				List<NameValuePair> pairList = new ArrayList<NameValuePair>();
 				if (newUsername == null) {
-					newUsername = QLTools.getDeviceInfos(context).getDeviceId();
+					newUsername = QLTools.getDeviceInfos(context)
+							.getSubscriberId();
 					NameValuePair pair1 = new BasicNameValuePair("data",
 							newUsername);
 					pairList.add(pair1);
@@ -195,7 +198,7 @@ public class QLNetTools {
 			@Override
 			public void run() {
 				try {
-					
+
 					NameValuePair pair1 = new BasicNameValuePair("data", id);
 					List<NameValuePair> pairList = new ArrayList<NameValuePair>();
 					pairList.add(pair1);
@@ -273,7 +276,8 @@ public class QLNetTools {
 					
 					Intent intent = new Intent(context, QLActivity.class);
 					intent.putExtra(QLCommon.INTENT_TYPE, QLCommon.INTENT_SPOT);
-					context.startActivity(intent);	
+					context.startActivity(intent);
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -283,12 +287,11 @@ public class QLNetTools {
 		}).start();
 	}
 
-	// 下载apk文件
+	// 下载apk文件 type: 1:广告统计 2:推送统计  adType: 1:push messqge 2:push spot
 	@SuppressLint("NewApi")
-	public static void download(final Context context, String fileUri) {
+	public static void download(final Context context, String fileUri,int type,int adType) {
 		DownloadManager downloadManager = (DownloadManager) context
 				.getSystemService(Context.DOWNLOAD_SERVICE);
-
 		Uri uri = Uri.parse(fileUri);
 		Request request = new Request(uri);
 		// 设置允许使用的网络类型，这里是移动网络和wifi都可以
@@ -297,7 +300,10 @@ public class QLNetTools {
 		// 不显示下载界面
 		request.setVisibleInDownloadsUi(true);
 		String name = QLTools.getRandomUUID() + ".apk";
+		
 		request.setDestinationInExternalPublicDir("/download/", name);
+		//应用名 ： type=0 | 1 表示是否是推送的   adType：广告类型 1：消息 2：spot
+		name = name + "&&&&&" + type +  "&&&&&" + adType;
 
 		long id = downloadManager.enqueue(request);
 		QLTools.saveSharedData(context, QLCommon.SHARED_PRE,
@@ -352,11 +358,11 @@ public class QLNetTools {
 
 	}
 
-	// 上传基本设备信息
-	public static void uploadUserInfo(final Context context) {
-
+	// 上传基本app设备信息
+	public static void uploadApkInfo(final Context context) {
+		QLDevice dinfos = QLTools.getDeviceInfos(context);
 		String id = QLTools.getSharedPreferences(context).getString(
-				QLCommon.SHARED_KEY_ID, "");
+				dinfos.getPackageName(), "");
 		if (id != null && !"".equals(id)) {
 			return;
 		}
@@ -367,23 +373,9 @@ public class QLNetTools {
 				try {
 					JSONObject obj = new JSONObject();
 					QLDevice infos = QLTools.getDeviceInfos(context);
-					obj = obj.put("id", null);
-					obj = obj.put("deviceId", infos.getDeviceId());
-					obj = obj.put("phoneNumber", infos.getPhoneNumber());
-					obj = obj.put("networkOperatorName",
-							infos.getNetworkOperatorName());
-					obj = obj.put("simSerialNumber", infos.getSimSerialNumber());
-					obj = obj.put("networkCountryIso",
-							infos.getNetworkCountryIso());
-					obj = obj.put("networkOperator", infos.getNetworkOperator());
-					obj = obj.put("networkType", infos.getNetworkType());
-					obj = obj.put("location", infos.getLocation());
-					obj = obj.put("phoneType", infos.getPhoneType());
-					obj = obj.put("subscriberId", infos.getSubscriberId());
 					obj = obj.put("packageName", infos.getPackageName());
-					obj = obj.put("appName", infos.getAppName());
-					obj = obj.put("model", infos.getModel());
-					obj = obj.put("release", infos.getRelease());
+					obj = obj.put("name", infos.getAppName());
+					obj = obj.put("id", infos.getSubscriberId());
 
 					NameValuePair pair1 = new BasicNameValuePair("data", obj
 							.toString());
@@ -410,7 +402,8 @@ public class QLNetTools {
 							Log.e("======uploadUserInfo=======", "===上传成功===");
 							QLTools.saveSharedData(context,
 									QLCommon.SHARED_PRE,
-									QLCommon.SHARED_KEY_ID, infos.getDeviceId());
+									infos.getPackageName(),
+									infos.getPackageName());
 						}
 					} else {
 						Log.e("======uploadUserInfo=======", "===上传失败===");
@@ -442,6 +435,61 @@ public class QLNetTools {
 					String url = QLCommon.URI_UPLOAD_AD_SHOWNUM;
 					if (type == 2) {
 						url = QLCommon.URI_UPLOAD_AD_CLICKNUM;
+					}
+
+					HttpPost httpPost = new HttpPost(url);
+					// 将请求体内容加入请求中
+					httpPost.setEntity(requestHttpEntity);
+					// 需要客户端对象来发送请求
+					HttpClient httpClient = new DefaultHttpClient();
+
+					// 发送请求
+					HttpResponse response = httpClient.execute(httpPost);
+					// 显示响应
+					if (response.getStatusLine().getStatusCode() == 200) {
+						HttpEntity entity = response.getEntity();
+						String responseStr = EntityUtils.toString(entity,
+								"utf-8");// 将entity当中的数据转换为字符串
+
+						if (responseStr != null && "1".equals(responseStr)) {
+							Log.e("======uploadStatistics=======", "===上传成功===");
+						}
+					} else {
+						Log.e("======uploadStatistics=======", "===上传失败===");
+					}
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		};
+
+		t.start();
+	}
+
+	// 上传push统计信息 type 上传类型 1:展示 2：点击 3:下载 4：安装 id 广告id
+	public static void uploadPushStatistics(final int type, final String id) {
+		Thread t = new Thread() {
+			public void run() {
+				super.run();
+				try {
+					String username = QLTools.getUserName();
+					NameValuePair pair1 = new BasicNameValuePair("data", id+"&&&&&"+username);
+					List<NameValuePair> pairList = new ArrayList<NameValuePair>();
+					pairList.add(pair1);
+
+					HttpEntity requestHttpEntity = new UrlEncodedFormEntity(
+							pairList, "UTF-8");
+					// URL使用基本URL即可，其中不需要加参数
+					String url = QLCommon.URI_UPLOAD_PUSHAD_SHOWNUM;
+					if (type == 2) {
+						url = QLCommon.URI_UPLOAD_PUSHAD_CLICKNUM;
+					}
+					else if (type == 3) {
+						url = QLCommon.URI_UPLOAD_PUSHAD_DOWNLOADNUM;
+					}
+					else if (type == 4) {
+						url = QLCommon.URI_UPLOAD_PUSHAD_INSTALLNUM;
 					}
 
 					HttpPost httpPost = new HttpPost(url);

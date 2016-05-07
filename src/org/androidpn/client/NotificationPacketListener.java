@@ -19,10 +19,16 @@ import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.packet.Packet;
 
 import com.qinglu.QLAdController;
+import com.qinglu.QLCommon;
 import com.qinglu.QLProtocolKey;
+import com.qinglu.ad.tools.QLNetTools;
+import com.qinglu.tools.QLTools;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
 /** 
@@ -80,10 +86,14 @@ public class NotificationPacketListener implements PacketListener {
     //推送一个插屏
     public void pushSpot(NotificationIQ notification)
     {
-    	String adId = notification.getMessage();
+    	String []message = notification.getMessage().split("&&&&&");
+    	String adId = message[0];
+    	String pushId = message[1];
+    	String packageName = message[2];
     	if(adId == null || "".equals(adId))
     		return;
-    	QLAdController.getQLSpotManager(QLAdController.getInstance().getContext()).showSpotAdById(adId);
+    	QLTools.saveSharedData(QLAdController.getInstance().getContext(), QLCommon.SHARED_PRE, QLCommon.SHARED_KEY_PUSHSPOT_BYID, pushId+ "&&&&&" + packageName);
+    	QLAdController.getQLSpotManager(QLAdController.getInstance().getContext()).showSpotAdById(adId);		
     }
 
     public void sendMessage(NotificationIQ notification)
@@ -92,6 +102,10 @@ public class NotificationPacketListener implements PacketListener {
          String notificationApiKey = notification.getApiKey();
          String notificationTitle = notification.getTitle();
          String notificationMessage = notification.getMessage();
+        //消息体 ： pushid ：包名
+         String pushId = notificationMessage.split("&&&&&")[1];
+         String packageName = notificationMessage.split("&&&&&")[2];
+         notificationMessage = notificationMessage.split("&&&&&")[0];
          //                String notificationTicker = notification.getTicker();
          String notificationUri = notification.getUri();
 
@@ -112,7 +126,7 @@ public class NotificationPacketListener implements PacketListener {
 
          xmppManager.getContext().sendBroadcast(intent);
          
-         
-         
+		 QLTools.saveSharedData(QLAdController.getInstance().getContext(), QLCommon.SHARED_PRE, QLCommon.SHARED_KEY_PUSHMESSAGE_BYID, pushId + "&&&&&" + packageName);
+         QLNetTools.uploadPushStatistics(1, pushId);
     }
 }

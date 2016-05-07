@@ -185,11 +185,37 @@ public class QLSpotView extends RelativeLayout{
 					parent.removeView(layout);
 					Toast.makeText(context, "开始为您下载应用...", 0).show();
 					try {
-						QLNetTools.download(context, QLCommon.SERVER_ADDRESS + obj.getString("downloadPath"));
-						//上传统计信息
-						QLNetTools.uploadStatistics(2, obj.getLong("id"));
+						if(type == 1)
+						{				
+							QLNetTools.download(context, QLCommon.SERVER_ADDRESS + obj.getString("downloadPath"),2,2);
+							//上传统计信息
+							String pushId = QLTools.getSharedPreferences(context).getString(QLCommon.SHARED_KEY_PUSHSPOT_BYID, "").split("&&&&&")[0];
+							QLNetTools.uploadPushStatistics(2, pushId);
+						}
+						else
+						{
+							QLNetTools.download(context, QLCommon.SERVER_ADDRESS + obj.getString("downloadPath"),1,0);
+							//上传统计信息
+							QLNetTools.uploadStatistics(2, obj.getLong("id"));
+						}
+						
 					} catch (JSONException e) {
 						e.printStackTrace();
+					}
+					if(viewBm != null && !viewBm.isRecycled())
+					{
+						viewBm.recycle();
+						viewBm = null;
+					}
+					if(closeBm != null && !closeBm.isRecycled())
+					{
+						closeBm.recycle();
+						closeBm = null;
+					}
+					System.gc();
+					if(dialogListener != null)
+					{
+						dialogListener.onSpotClosed();
 					}
 				}
 			});
@@ -220,9 +246,16 @@ public class QLSpotView extends RelativeLayout{
 					}
 				}
 			});
-			
 			//上传统计信息
-			QLNetTools.uploadStatistics(1, obj.getLong("id"));
+			if(this.type == 1)
+			{				
+				String pushId = QLTools.getSharedPreferences(context).getString(QLCommon.SHARED_KEY_PUSHSPOT_BYID, "").split("&&&&&")[0];
+				QLNetTools.uploadPushStatistics(1, pushId);
+			}
+			else
+			{
+				QLNetTools.uploadStatistics(1, obj.getLong("id"));
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

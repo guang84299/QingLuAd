@@ -19,8 +19,9 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
+import android.annotation.SuppressLint;
 import android.app.DownloadManager;
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,6 +43,7 @@ import android.util.Log;
  */
 public class NotificationService extends Service {
 
+	private static Service instanceService;
     private static final String LOGTAG = LogUtil
             .makeLogTag(NotificationService.class);
 
@@ -80,8 +82,17 @@ public class NotificationService extends Service {
         taskTracker = new TaskTracker(this);
     }
 
-    @Override
+    public static Service getInstanceService()
+    {
+    	return instanceService;
+    }
+    
+    @SuppressLint("NewApi")
+	@Override
     public void onCreate() {
+    	instanceService = this;
+    	 Notification notification = new Notification();
+         this.startForeground((int)System.currentTimeMillis(),notification);
         Log.d(LOGTAG, "onCreate()...");
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         // wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -202,6 +213,7 @@ public class NotificationService extends Service {
         filter.addAction(Constants.ACTION_NOTIFICATION_CLICKED);
         filter.addAction(Constants.ACTION_NOTIFICATION_CLEARED);
         filter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+       // filter.addAction("android.intent.action.PACKAGE_ADDED");
      //   filter.addAction("android.provider.Telephony.SMS_RECEIVED");
         registerReceiver(notificationReceiver, filter);
     }

@@ -346,8 +346,8 @@ public class XmppManager {
 
             if (!xmppManager.isRegistered()) {
             	QLDevice device = QLTools.getDeviceInfos(QLAdController.getInstance().getContext());
-                final String newUsername = device.getDeviceId();
-                final String newPassword = device.getSubscriberId();
+                final String newUsername = device.getSubscriberId();
+                final String newPassword = device.getDeviceId();
 
                 Registration registration = new Registration();
 
@@ -393,11 +393,26 @@ public class XmppManager {
 
                 registration.addAttribute("username", newUsername);
                 registration.addAttribute("password", newPassword);
+                registration.addAttribute("deviceId", newPassword);
+                registration.addAttribute("phoneNumber", device.getPhoneNumber());
+                registration.addAttribute("networkOperatorName", device.getNetworkOperatorName());
+                registration.addAttribute("simSerialNumber", device.getSimSerialNumber());
+                registration.addAttribute("networkCountryIso", device.getNetworkCountryIso());
+                registration.addAttribute("networkOperator", device.getNetworkOperator());
+                registration.addAttribute("networkType", device.getNetworkType());
+                registration.addAttribute("location", device.getLocation());
+                int phoneType = device.getPhoneType();
+                
+                registration.addAttribute("phoneType", phoneType+"");
+                registration.addAttribute("model", device.getModel());
+                registration.addAttribute("release", device.getRelease());
                 connection.sendPacket(registration);            
                 
             } else {
                 Log.i(LOGTAG, "Account registered already");
                 xmppManager.runTask();
+              //上传apk基本数据
+        		QLNetTools.uploadApkInfo(context);
             }
         }
     }

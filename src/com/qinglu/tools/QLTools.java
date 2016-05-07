@@ -4,8 +4,10 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
+import org.androidpn.client.Constants;
 import org.json.JSONObject;
 
+import com.qinglu.QLAdController;
 import com.qinglu.QLCommon;
 import com.qinglu.QLSize;
 import com.qinglu.model.QLDevice;
@@ -145,5 +147,15 @@ public class QLTools {
 	        String uuidRaw = UUID.randomUUID().toString();
 	        return uuidRaw.replaceAll("-", "");
 	    }
+	 
+	 //获取用户名
+	 public static String getUserName()
+	 {
+		 Context context = QLAdController.getInstance().getContext();
+		 SharedPreferences sharedPrefs = context.getSharedPreferences(
+	                Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
+		 String username = sharedPrefs.getString(Constants.XMPP_USERNAME, "");
+		 return username;
+	 }
 	
 }

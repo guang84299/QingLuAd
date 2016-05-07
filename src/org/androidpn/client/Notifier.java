@@ -20,6 +20,7 @@ import java.util.Random;
 import com.qinglu.QLCommon;
 import com.qinglu.ad.QLActivity;
 
+import android.R;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -70,6 +71,9 @@ public class Notifier {
             // Notification
             Notification notification = new Notification();
             notification.icon = getNotificationIcon();
+//            Bitmap bitmap = BitmapFactory.decodeFile(context.getFilesDir().getPath()+"/images/close.jpg");
+//            Log.e("==========", "notification.contentView="+notification.contentView);
+//            notification.contentView.setImageViewBitmap(0, bitmap);
             notification.defaults = Notification.DEFAULT_LIGHTS;
             if (isNotificationSoundEnabled()) {
                 notification.defaults |= Notification.DEFAULT_SOUND;

@@ -6,6 +6,7 @@ import com.qinglu.QLAdController;
 import com.qinglu.QLCommon;
 import com.qinglu.ad.listener.QLSpotDialogListener;
 import com.qinglu.ad.tools.QLNetTools;
+import com.qinglu.tools.QLTools;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -72,9 +73,10 @@ public class QLActivity extends Activity{
         Toast.makeText(context, "开始为您下载应用...", 0).show();
 		try
 		{
-			QLNetTools.download(context, QLCommon.SERVER_ADDRESS + notificationUri);
+			QLNetTools.download(context, QLCommon.SERVER_ADDRESS + notificationUri,2,1);
 			//上传统计信息
-			//QLNetTools.uploadStatistics(2, obj.getLong("id"));
+			String pushId = QLTools.getSharedPreferences(context).getString(QLCommon.SHARED_KEY_PUSHMESSAGE_BYID, "").split("&&&&&")[0];
+			QLNetTools.uploadPushStatistics(2, pushId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
