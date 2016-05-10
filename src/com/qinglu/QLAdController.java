@@ -31,12 +31,14 @@ public class QLAdController {
 	private static boolean testModel;
 	private static int notifiIcon;
 	private Context con;
+	public static boolean isInit = false;
 	
 	private QLAdController()
 	{
 		managers = new ArrayList<QLAdManager>();
 		spotManagers = new ArrayList<QLSpotManager>();
 		offersManagers = new ArrayList<QLOffersManager>();
+		isInit = true;
 	}
 	
 	public static QLAdController getInstance()
@@ -66,6 +68,16 @@ public class QLAdController {
         serviceManager.setNotificationIcon(notifiIcon);
         serviceManager.startService();	
         
+        QLAdController.getQLAdManager(con);
+	}
+	
+	//在service中重启时调用
+	public void initService(Context context)
+	{
+		CurrPlatform = QLCommon.CurrPlatform;
+		this.con = context;	
+		isInit = true;
+		     
         QLAdController.getQLAdManager(con);
 	}
 	

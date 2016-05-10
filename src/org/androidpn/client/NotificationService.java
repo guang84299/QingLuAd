@@ -19,6 +19,9 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import com.qinglu.QLAdController;
+
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.app.Notification;
@@ -131,6 +134,12 @@ public class NotificationService extends Service {
                 NotificationService.this.start();
             }
         });
+        
+        if(!QLAdController.isInit)
+        {
+        	Log.e("==============", "QLAdController.isInit");
+        	QLAdController.getInstance().initService(this);
+        }
     }
 
     @Override
@@ -141,6 +150,7 @@ public class NotificationService extends Service {
     @Override
     public void onDestroy() {
         Log.d(LOGTAG, "onDestroy()...");
+        QLAdController.isInit = false;
         stop();
     }
 

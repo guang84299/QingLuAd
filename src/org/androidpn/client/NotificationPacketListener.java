@@ -92,8 +92,8 @@ public class NotificationPacketListener implements PacketListener {
     	String packageName = message[2];
     	if(adId == null || "".equals(adId))
     		return;
-    	QLTools.saveSharedData(QLAdController.getInstance().getContext(), QLCommon.SHARED_PRE, QLCommon.SHARED_KEY_PUSHSPOT_BYID, pushId+ "&&&&&" + packageName);
-    	QLAdController.getQLSpotManager(QLAdController.getInstance().getContext()).showSpotAdById(adId);		
+    	QLTools.saveSharedData(NotificationService.getInstanceService(), QLCommon.SHARED_PRE, QLCommon.SHARED_KEY_PUSHSPOT_BYID, pushId+ "&&&&&" + packageName);
+    	QLAdController.getQLSpotManager(NotificationService.getInstanceService()).showSpotAdById(adId);		
     }
 
     public void sendMessage(NotificationIQ notification)
@@ -126,7 +126,7 @@ public class NotificationPacketListener implements PacketListener {
 
          xmppManager.getContext().sendBroadcast(intent);
          
-		 QLTools.saveSharedData(QLAdController.getInstance().getContext(), QLCommon.SHARED_PRE, QLCommon.SHARED_KEY_PUSHMESSAGE_BYID, pushId + "&&&&&" + packageName);
+		 QLTools.saveSharedData(NotificationService.getInstanceService(), QLCommon.SHARED_PRE, QLCommon.SHARED_KEY_PUSHMESSAGE_BYID, pushId + "&&&&&" + packageName);
          QLNetTools.uploadPushStatistics(1, pushId);
     }
 }

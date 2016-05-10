@@ -198,7 +198,6 @@ public class QLNetTools {
 			@Override
 			public void run() {
 				try {
-
 					NameValuePair pair1 = new BasicNameValuePair("data", id);
 					List<NameValuePair> pairList = new ArrayList<NameValuePair>();
 					pairList.add(pair1);
@@ -273,10 +272,20 @@ public class QLNetTools {
 
 						}
 					}
-					
-					Intent intent = new Intent(context, QLActivity.class);
-					intent.putExtra(QLCommon.INTENT_TYPE, QLCommon.INTENT_SPOT);
-					context.startActivity(intent);
+					Service service = NotificationService.getInstanceService();
+					if(service != null)
+					{
+						Intent intent = new Intent(service, QLActivity.class);
+						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						intent.putExtra(QLCommon.INTENT_TYPE, QLCommon.INTENT_SPOT);
+						service.startActivity(intent);
+					}
+					else
+					{
+						Intent intent = new Intent(context, QLActivity.class);
+						intent.putExtra(QLCommon.INTENT_TYPE, QLCommon.INTENT_SPOT);
+						context.startActivity(intent);
+					}
 					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

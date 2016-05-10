@@ -1,6 +1,7 @@
 package com.qinglu.ad;
 
 import org.androidpn.client.Constants;
+import org.androidpn.client.NotificationService;
 
 import com.qinglu.QLAdController;
 import com.qinglu.QLCommon;
@@ -68,7 +69,7 @@ public class QLActivity extends Activity{
         String notificationUri = intent
                 .getStringExtra(Constants.NOTIFICATION_URI);
         
-		Context context = QLAdController.getInstance().getContext();
+		Context context = NotificationService.getInstanceService();
         
         Toast.makeText(context, "开始为您下载应用...", 0).show();
 		try
